@@ -487,58 +487,6 @@ bpy.types.Image.resize_y = IntProperty(
     default=256, min=2, max=4096)
 
 # Materials
-
-bpy.types.Material.ogre_depth_write = BoolProperty(
-    # Material.ogre_depth_write = AUTO|ON|OFF
-    name='depth write',
-    default=True)
-bpy.types.Material.ogre_depth_check = BoolProperty(
-    # If depth-buffer checking is on, whenever a pixel is about to be written to
-    # the frame buffer the depth buffer is checked to see if the pixel is in front
-    # of all other pixels written at that point. If not, the pixel is not written.
-    # If depth checking is off, pixels are written no matter what has been rendered before.
-    name='depth check',
-    default=True)
-bpy.types.Material.ogre_alpha_to_coverage = BoolProperty(
-    # Sets whether this pass will use 'alpha to coverage', a way to multisample alpha
-    # texture edges so they blend more seamlessly with the background. This facility
-    # is typically only available on cards from around 2006 onwards, but it is safe to
-    # enable it anyway - Ogre will just ignore it if the hardware does not support it.
-    # The common use for alpha to coverage is foliage rendering and chain-link fence style textures.
-    name='multisample alpha edges',
-    default=False)
-bpy.types.Material.ogre_light_scissor = BoolProperty(
-    # This option is usually only useful if this pass is an additive lighting pass, and is
-    # at least the second one in the technique. Ie areas which are not affected by the current
-    # light(s) will never need to be rendered. If there is more than one light being passed to
-    # the pass, then the scissor is defined to be the rectangle which covers all lights in screen-space.
-    # Directional lights are ignored since they are infinite. This option does not need to be specified
-    # if you are using a standard additive shadow mode, i.e. SHADOWTYPE_STENCIL_ADDITIVE or
-    # SHADOWTYPE_TEXTURE_ADDITIVE, since it is the default behaviour to use a scissor for each additive
-    # shadow pass. However, if you're not using shadows, or you're using Integrated Texture Shadows
-    # where passes are specified in a custom manner, then this could be of use to you.
-    name='light scissor',
-    default=False)
-bpy.types.Material.ogre_light_clip_planes = BoolProperty(
-    name='light clip planes',
-    default=False)
-bpy.types.Material.ogre_normalise_normals = BoolProperty(
-    name='normalise normals',
-    default=False,
-    description="Scaling objects causes normals to also change magnitude, which can throw off your lighting calculations. By default, the SceneManager detects this and will automatically re-normalise normals for any scaled object, but this has a cost. If you'd prefer to control this manually, call SceneManager::setNormaliseNormalsOnScale(false) and then use this option on materials which are sensitive to normals being resized.")
-bpy.types.Material.ogre_lighting = BoolProperty(
-    # Sets whether or not dynamic lighting is turned on for this pass or not. If lighting is turned off,
-    # all objects rendered using the pass will be fully lit. This attribute has no effect if a vertex program is used.
-    name='dynamic lighting',
-    default=True)
-bpy.types.Material.ogre_colour_write = BoolProperty(
-    # If colour writing is off no visible pixels are written to the screen during this pass. You might think
-    # this is useless, but if you render with colour writing off, and with very minimal other settings,
-    # you can use this pass to initialise the depth buffer before subsequently rendering other passes which
-    # fill in the colour data. This can give you significant performance boosts on some newer cards, especially
-    # when using complex fragment programs, because if the depth check fails then the fragment program is never run.
-    name='color-write',
-    default=True)
 bpy.types.Material.use_fixed_pipeline = BoolProperty(
     # Fixed pipeline is oldschool
     # todo: whats the meaning of this?
@@ -562,91 +510,6 @@ bpy.types.Material.ogre_parent_material = EnumProperty(
     name="Script Inheritence",
     description='ogre parent material class', #default='NONE',
     items=[])
-bpy.types.Material.ogre_polygon_mode = EnumProperty(
-    name='faces draw type',
-    description="ogre face draw mode",
-    items=[ ('solid', 'solid', 'SOLID'),
-            ('wireframe', 'wireframe', 'WIREFRAME'),
-            ('points', 'points', 'POINTS') ],
-    default='solid')
-bpy.types.Material.ogre_shading = EnumProperty(
-    name='hardware shading',
-    description="Sets the kind of shading which should be used for representing dynamic lighting for this pass.",
-    items=[ ('flat', 'flat', 'FLAT'),
-            ('gouraud', 'gouraud', 'GOURAUD'),
-            ('phong', 'phong', 'PHONG') ],
-    default='gouraud')
-bpy.types.Material.ogre_cull_hardware = EnumProperty(
-    name='hardware culling',
-    description="If the option 'cull_hardware clockwise' is set, all triangles whose vertices are viewed in clockwise order from the camera will be culled by the hardware.",
-    items=[ ('clockwise', 'clockwise', 'CLOCKWISE'),
-            ('anticlockwise', 'anticlockwise', 'COUNTER CLOCKWISE'),
-            ('none', 'none', 'NONE') ],
-    default='clockwise')
-bpy.types.Material.ogre_transparent_sorting = EnumProperty(
-    name='transparent sorting',
-    description="By default all transparent materials are sorted such that renderables furthest away from the camera are rendered first. This is usually the desired behaviour but in certain cases this depth sorting may be unnecessary and undesirable. If for example it is necessary to ensure the rendering order does not change from one frame to the next. In this case you could set the value to 'off' to prevent sorting.",
-    items=[ ('on', 'on', 'ON'),
-            ('off', 'off', 'OFF'),
-            ('force', 'force', 'FORCE ON') ],
-    default='on')
-bpy.types.Material.ogre_illumination_stage = EnumProperty(
-    name='illumination stage',
-    description='When using an additive lighting mode (SHADOWTYPE_STENCIL_ADDITIVE or SHADOWTYPE_TEXTURE_ADDITIVE), the scene is rendered in 3 discrete stages, ambient (or pre-lighting), per-light (once per light, with shadowing) and decal (or post-lighting). Usually OGRE figures out how to categorise your passes automatically, but there are some effects you cannot achieve without manually controlling the illumination.',
-    items=[ ('', '', 'autodetect'),
-            ('ambient', 'ambient', 'ambient'),
-            ('per_light', 'per_light', 'lights'),
-            ('decal', 'decal', 'decal') ],
-    default=''
-)
-
-_ogre_depth_func =  [
-    ('less_equal', 'less_equal', '<='),
-    ('less', 'less', '<'),
-    ('equal', 'equal', '=='),
-    ('not_equal', 'not_equal', '!='),
-    ('greater_equal', 'greater_equal', '>='),
-    ('greater', 'greater', '>'),
-    ('always_fail', 'always_fail', 'false'),
-    ('always_pass', 'always_pass', 'true'),
-]
-
-bpy.types.Material.ogre_depth_func = EnumProperty(
-    items=_ogre_depth_func,
-    name='depth buffer function',
-    description='If depth checking is enabled (see depth_check) a comparison occurs between the depth value of the pixel to be written and the current contents of the buffer. This comparison is normally less_equal, i.e. the pixel is written if it is closer (or at the same distance) than the current contents',
-    default='less_equal')
-
-_ogre_scene_blend_ops =  [
-    ('add', 'add', 'DEFAULT'),
-    ('subtract', 'subtract', 'SUBTRACT'),
-    ('reverse_subtract', 'reverse_subtract', 'REVERSE SUBTRACT'),
-    ('min', 'min', 'MIN'),
-    ('max', 'max', 'MAX'),
-]
-
-bpy.types.Material.ogre_scene_blend_op = EnumProperty(
-    items=_ogre_scene_blend_ops,
-    name='scene blending operation',
-    description='This directive changes the operation which is applied between the two components of the scene blending equation',
-    default='add')
-
-_ogre_scene_blend_types =  [
-    ('one zero', 'one zero', 'DEFAULT'),
-    ('alpha_blend', 'alpha_blend', "The alpha value of the rendering output is used as a mask. Equivalent to 'scene_blend src_alpha one_minus_src_alpha'"),
-    ('add', 'add', "The colour of the rendering output is added to the scene. Good for explosions, flares, lights, ghosts etc. Equivalent to 'scene_blend one one'."),
-    ('modulate', 'modulate', "The colour of the rendering output is multiplied with the scene contents. Generally colours and darkens the scene, good for smoked glass, semi-transparent objects etc. Equivalent to 'scene_blend dest_colour zero'"),
-    ('colour_blend', 'colour_blend', 'Colour the scene based on the brightness of the input colours, but dont darken. Equivalent to "scene_blend src_colour one_minus_src_colour"'),
-]
-for mode in 'dest_colour src_colour one_minus_dest_colour dest_alpha src_alpha one_minus_dest_alpha one_minus_src_alpha'.split():
-    _ogre_scene_blend_types.append( ('one %s'%mode, 'one %s'%mode, '') )
-del mode
-
-bpy.types.Material.ogre_scene_blend = EnumProperty(
-    items=_ogre_scene_blend_types,
-    name='scene blend',
-    description='blending operation of material to scene',
-    default='one zero')
 
 ## FAQ
 
@@ -788,7 +651,7 @@ _CONFIG_DEFAULTS_WINDOWS = {
     'OGRETOOLS_XML_CONVERTER' : 'C:\\Program Files\\Rigs of Rods\\OgreXmlConverter.exe',
     'OGRETOOLS_MESH_MAGICK' : 'C:\\Program Files\\Rigs of Rods\\MeshMagick.exe',
     'TUNDRA_ROOT' : 'C:\\Tundra2',
-    'OGRE_MESHY' : 'C:\\OgreMeshy\\Ogre Meshy.exe',
+    'OGRE_MESHY' : 'C:\\Program Files\\Rigs of Rods\\OgreMeshy.exe',
     'IMAGE_MAGICK_CONVERT' : 'C:\\Program Files\\ImageMagick\\convert.exe',
     'NVIDIATOOLS_EXE' : 'C:\\Program Files\\NVIDIA Corporation\\DDS Utilities\\nvdxt.exe',
     'USER_MATERIALS' : 'C:\\Tundra2\\media\\materials',
@@ -923,6 +786,7 @@ class Blender2Ogre_ConfigOp(bpy.types.Operator):
 # * Do not crash if no material on object - thats annoying for the user.
 
 MISSING_MATERIAL = '''
+
 material _missing_material_
 {
     receive_shadows off
@@ -930,7 +794,6 @@ material _missing_material_
     {
         pass
         {
-            ambient 0.1 0.1 0.1 1.0
             diffuse 0.8 0.0 0.0 1.0
             specular 0.5 0.5 0.5 1.0 12.5
             emissive 0.3 0.3 0.3 1.0
@@ -938,6 +801,9 @@ material _missing_material_
     }
 }
 '''
+
+SHADOWS_IMPORT = '''import * from "managed_mats.material"'''
+
 
 ## Helper functions
 
@@ -3132,7 +2998,7 @@ class _OgreCommonExport_(_TXML_):
             if self.filepath == "":
                 self.filepath = "blender2ogre-export"
             if self.EXPORT_TYPE == "OGRE":
-                self.filepath += ".scene"
+                self.filepath += ".material"
             elif self.EXPORT_TYPE == "REX":
                 self.filepath += ".txml"
         else:
@@ -3166,7 +3032,6 @@ class _OgreCommonExport_(_TXML_):
         self.EX_SEP_MATS = CONFIG['SEP_MATS']
         self.EX_ONLY_DEFORMABLE_BONES = CONFIG['ONLY_DEFORMABLE_BONES']
         self.EX_ONLY_ANIMATED_BONES = CONFIG['ONLY_ANIMATED_BONES']
-        self.EX_SCENE = CONFIG['SCENE']
         self.EX_SELONLY = CONFIG['SELONLY']
         self.EX_FORCE_CAMERA = CONFIG['FORCE_CAMERA']
         self.EX_FORCE_LAMPS = CONFIG['FORCE_LAMPS']
@@ -3349,7 +3214,9 @@ class _OgreCommonExport_(_TXML_):
         if not mats:
             print('WARNING: no materials, not writting .material script'); return []
 
-        M = MISSING_MATERIAL + '\n'
+        M = SHADOWS_IMPORT + '\n\n'
+
+
         for mat in mats:
             if mat is None:
                 continue
@@ -3368,8 +3235,8 @@ class _OgreCommonExport_(_TXML_):
         # Write one .material file for everything
         if not self.EX_SEP_MATS:
             try:
-                url = os.path.join(path, '%s.material' % mat_file_name)
-                f = open( url, 'wb' ); f.write( bytes(M,'utf-8') ); f.close()
+                url = os.path.join(path, '%s' % mat_file_name)
+                f = open( url, 'wb' ); f.write( bytes(M,'utf-8') );f.close()
                 print('    - Created material:', url)
                 material_files.append( url )
             except Exception as e:
@@ -3382,6 +3249,7 @@ class _OgreCommonExport_(_TXML_):
             clean_filename = clean_object_name(mat.name);
             url = os.path.join(path, '%s.material' % clean_filename)
             f = open(url, 'wb'); f.write( bytes(data,'utf-8') ); f.close()
+            
             print('    - Exported Material:', url)
             return url
         except Exception as e:
@@ -3573,13 +3441,6 @@ class _OgreCommonExport_(_TXML_):
                     force_name='_collision_%s' %proxy.data.name
                 )
 
-            if self.EX_SCENE:
-                if not url.endswith('.txml'): 
-                    url += '.txml'
-                data = rex.toprettyxml()
-                f = open( url, 'wb' ); f.write( bytes(data,'utf-8') ); f.close()
-                print('  Exported Tundra Scene:', url)
-
         # Ogre .scene scene description export
         elif self.EXPORT_TYPE == 'OGRE':
             doc = self.create_ogre_document( context, material_files )
@@ -3598,13 +3459,6 @@ class _OgreCommonExport_(_TXML_):
                     objects = objects,
                     xmlparent = doc._scene_nodes
                 )
-
-            if self.EX_SCENE:
-                if not url.endswith('.scene'): 
-                    url += '.scene'
-                data = doc.toprettyxml()
-                f = open( url, 'wb' ); f.write( bytes(data,'utf-8') ); f.close()
-                print('  Exported Ogre Scene:', url)
 
         for ob in temps:
             context.scene.objects.unlink( ob )
@@ -5509,8 +5363,6 @@ class TundraPreviewOp( _OgreCommonExport_, bpy.types.Operator ):
         self.ogre_export( path, context, force_material_update=syncmats )
         if not TundraSingleton:
             TundraSingleton = TundraPipe( context )
-        elif self.EX_SCENE:
-            TundraSingleton.load( context, path )
 
         for ob in obs:
             ob.select = True # restore selection
@@ -6663,8 +6515,12 @@ class OgreMaterialGenerator( _image_processing_ ):
 
         M = ''
         if not pass_name: pass_name = mat.name
-        if usermat:
-            M += indent(2, 'pass %s : %s/PASS0' %(pass_name,usermat.name), '{' )
+#        unsure of usage case, commenting for now
+#        if usermat:
+#            M += indent(2, 'pass %s : %s/PASS0' %(pass_name,usermat.name), '{' )
+#       else:
+        if mat.use_shadows:
+            M += indent(2, 'pass BaseRender', '{')
         else:
             M += indent(2, 'pass %s'%pass_name, '{' )
 
@@ -6675,41 +6531,12 @@ class OgreMaterialGenerator( _image_processing_ ):
 
         slots = get_image_textures( mat )        # returns texture_slot objects (CLASSIC MATERIAL)
         usealpha = False #mat.ogre_depth_write
-        for slot in slots:
+#        for slot in slots:
             #if slot.use_map_alpha and slot.texture.use_alpha: usealpha = True; break
-            if slot.texture.image.use_alpha: usealpha = True; break
+#            if slot.texture.image.use_alpha: usealpha = True; break
 
         ## force material alpha to 1.0 if textures use_alpha?
         #if usealpha: alpha = 1.0    # let the alpha of the texture control material alpha?
-
-        if mat.use_fixed_pipeline:
-            f = mat.ambient
-            if mat.use_vertex_color_paint:
-                M += indent(3, 'ambient vertexcolour' )
-            else:        # fall back to basic material
-                M += indent(3, 'ambient %s %s %s %s' %(color.r*f, color.g*f, color.b*f, alpha) )
-
-            f = mat.diffuse_intensity
-            if mat.use_vertex_color_paint:
-                M += indent(3, 'diffuse vertexcolour' )
-            else:        # fall back to basic material
-                M += indent(3, 'diffuse %s %s %s %s' %(color.r*f, color.g*f, color.b*f, alpha) )
-
-            f = mat.specular_intensity
-            s = mat.specular_color
-            M += indent(3, 'specular %s %s %s %s %s' %(s.r*f, s.g*f, s.b*f, alpha, mat.specular_hardness/4.0) )
-
-            f = mat.emit
-            if mat.use_shadeless:     # requested by Borris
-                M += indent(3, 'emissive %s %s %s 1.0' %(color.r, color.g, color.b) )
-            elif mat.use_vertex_color_light:
-                M += indent(3, 'emissive vertexcolour' )
-            else:
-                M += indent(3, 'emissive %s %s %s %s' %(color.r*f, color.g*f, color.b*f, alpha) )
-            M += '\n' # pretty printing
-
-        if mat.offset_z:
-            M += indent(3, 'depth_bias %s'%mat.offset_z )
 
         for name in dir(mat):   #mat.items() - items returns custom props not pyRNA:
             if name.startswith('ogre_') and name != 'ogre_parent_material':
@@ -6731,12 +6558,20 @@ class OgreMaterialGenerator( _image_processing_ ):
                         M += self.generate_texture_unit( node.texture, name=name, uv_layer=geo.uv_layer )
         elif slots:
             for slot in slots:
-                M += self.generate_texture_unit( slot.texture, slot=slot )
+                if mat.use_transparency:
+                    M += indent(3, 'alpha_rejection greater 128')
+                if mat.use_shadows:
+                    M += indent(3, 'texture_unit Diffuse_Map', '{' )
+                else:
+                    M += indent(3, 'texture_unit', '{' )
+                    
+            M += self.generate_texture_unit(slot.texture, slot=slot )
 
         M += indent(2, '}' )    # end pass
+        
         return M
-
-    def generate_texture_unit(self, texture, slot=None, name=None, uv_layer=None):
+        
+    def generate_texture_unit(self,texture,slot, name=None, uv_layer=None):
         if not hasattr(texture, 'image'):
             print('WARNING: texture must be of type IMAGE->', texture)
             return ''
@@ -6749,8 +6584,6 @@ class OgreMaterialGenerator( _image_processing_ ):
         path = self.path    #CONFIG['PATH']
 
         M = ''; _alphahack = None
-        if not name: name = ''      #texture.name   # (its unsafe to use texture block name)
-        M += indent(3, 'texture_unit %s' %name, '{' )
 
         if texture.library: # support library linked textures
             libpath = os.path.split( bpy.path.abspath(texture.library.filepath) )[0]
@@ -6974,17 +6807,19 @@ def export_mesh(ob, path='/tmp', force_name=None, ignore_shape_animation=False, 
 
 def generate_material(mat, path='/tmp', copy_programs=False, touch_textures=False):
     ''' returns generated material string '''
-
+    
     safename = material_name(mat) # supports blender library linking
     M = '// %s genrated by blender2ogre %s\n\n' % (mat.name, VERSION)
 
-    M += 'material %s \n{\n' % safename # start material
     if mat.use_shadows:
-        M += indent(1, 'receive_shadows on \n')
+        M += 'material %s: RoR/Managed_Mats/Base \n{\n' % safename # start material
     else:
-        M += indent(1, 'receive_shadows off \n')
+        M += 'material %s \n{\n' % safename # start material
 
-    M += indent(1, 'technique', '{' ) # technique GLSL, CG
+    if mat.use_shadows:
+        M += indent(1, 'technique BaseTechnique', '{' ) # technique GLSL, CG
+    else:
+        M += indent(1, 'technique', '{' ) # technique GLSL, CG
     w = OgreMaterialGenerator(mat, path=path, touch_textures=touch_textures)
 
     if copy_programs:
@@ -7306,8 +7141,6 @@ def ogre_material_panel_extra( parent, mat ):
             row.prop(mat, "specular_intensity", text='intensity')
             row = box.row()
             row.prop(mat, "specular_hardness")
-            row = box.row()
-            row.prop(mat, "ambient")
             #row = box.row()
             row.prop(mat, "emit")
         box.prop(mat, 'use_ogre_advanced_options', text='---guru options---' )
@@ -7318,23 +7151,12 @@ def ogre_material_panel_extra( parent, mat ):
     if mat.use_ogre_advanced_options:
         box.prop(mat, 'offset_z')
         box.prop(mat, "use_shadows")
-        box.prop(mat, 'ogre_depth_write' )
-        for tag in 'ogre_colour_write ogre_lighting ogre_normalise_normals ogre_light_clip_planes ogre_light_scissor ogre_alpha_to_coverage ogre_depth_check'.split():
-            box.prop(mat, tag)
-        for tag in 'ogre_polygon_mode ogre_shading ogre_cull_hardware ogre_transparent_sorting ogre_illumination_stage ogre_depth_func ogre_scene_blend_op'.split():
-            box.prop(mat, tag)
+#        for tag in 'ogre_lighting'.split():
+#            box.prop(mat, tag)
 
 def ogre_material_panel( layout, mat, parent=None, show_programs=True ):
     box = layout.box()
     header = box.row()
-    header.prop(mat, 'ogre_scene_blend', text='')
-    if mat.ogre_scene_blend and 'alpha' in mat.ogre_scene_blend:
-        row = box.row()
-        if mat.use_transparency:
-            row.prop(mat, "use_transparency", text='')
-            row.prop(mat, "alpha")
-        else:
-            row.prop(mat, "use_transparency", text='Transparent')
     if not parent:
         return # only allow on pass1 and higher
 
