@@ -1860,25 +1860,6 @@ class PANEL_Textures(bpy.types.Panel):
         if not slot or not slot.texture:
             return
 
-        btype = slot.blend_type  # todo: fix this hack if/when slots support pyRNA
-        ex = False; texop = None
-        if btype in TextureUnit.colour_op:
-            if btype=='MIX' and slot.use_map_alpha and not slot.use_stencil:
-                if slot.diffuse_color_factor >= 1.0:
-                    texop = 'alpha_blend'
-                else:
-                    texop = TextureUnit.colour_op_ex[ btype ]
-                    ex = True
-            elif btype=='MIX' and slot.use_map_alpha and slot.use_stencil:
-                texop = 'blend_current_alpha'; ex=True
-            elif btype=='MIX' and not slot.use_map_alpha and slot.use_stencil:
-                texop = 'blend_texture_alpha'; ex=True
-            else:
-                texop = TextureUnit.colour_op[ btype ]
-        elif btype in TextureUnit.colour_op_ex:
-            texop = TextureUnit.colour_op_ex[ btype ]
-            ex = True
-
         box = layout.box()
         row = box.row()
         if texop:
@@ -1900,8 +1881,6 @@ class PANEL_Textures(bpy.types.Panel):
         if hasattr(slot.texture, 'image') and slot.texture.image:
             row = box.row()
             n = '(invalid option)'
-            if slot.texture.extension in TextureUnit.tex_address_mode:
-                n = TextureUnit.tex_address_mode[ slot.texture.extension ]
             row.prop(slot.texture, "extension", text=n)
             if slot.texture.extension == 'CLIP':
                 row.prop(slot, "color", text="Border Color")
@@ -3251,9 +3230,7 @@ class _OgreCommonExport_(_TXML_):
         try:
             clean_filename = clean_object_name(mat.name);
             url = os.path.join(path, '%s.material' % clean_filename)
-            f = open(url, 'wb'); 
-            f.write( bytes(data,'utf-8') );
-            f.close()
+            f = open(url, 'wb');f.write( bytes(data,'utf-8') );f.close()
             
             print('    - Exported Material:', url)
             return url
@@ -6522,8 +6499,8 @@ class OgreMaterialGenerator( _image_processing_ ):
         if not pass_name: pass_name = mat.name
 #        unsure of usage case, commenting for now
 #        if usermat:
-#            M += indent(2, 'pass %s : %s/PASS0' %(pass_name,usermat.name), '{' )
-#       else:
+#             M += indent(2, 'pass %s : %s/PASS0' %(pass_name,usermat.name), '{' )
+#        else:
         if mat.use_shadows:
             M += indent(2, 'pass BaseRender', '{')
         else:
@@ -6623,14 +6600,12 @@ class OgreMaterialGenerator( _image_processing_ ):
         M += indent(4, 'texture %s' %postname )
 
         exmode = texture.extension
-        if exmode in TextureUnit.tex_address_mode:
-            M += indent(4, 'tex_address_mode %s' %TextureUnit.tex_address_mode[exmode] )
 
 
         # TODO - hijack nodes for better control?
         if slot:        # classic blender material slot options
             if exmode == 'CLIP': M += indent(4, 'tex_border_colour %s %s %s' %(slot.color.r, slot.color.g, slot.color.b) )
-            M += indent(4, 'scale %s %s' %(1.0/slot.scale.x, 1.0/slot.scale.y) )
+            #M += indent(4, 'scale %s %s' %(1.0/slot.scale.x, 1.0/slot.scale.y) )
             if slot.texture_coords == 'REFLECTION':
                 if slot.mapping == 'SPHERE':
                     M += indent(4, 'env_map spherical' )
@@ -6653,35 +6628,6 @@ class OgreMaterialGenerator( _image_processing_ ):
             if slot.uv_layer:
                 idx = find_uv_layer_index( slot.uv_layer, self.material )
                 M += indent(4, 'tex_coord_set %s' %idx)
-
-            rgba = False
-            if texture.image.depth == 32: rgba = True
-            btype = slot.blend_type     # TODO - fix this hack if/when slots support pyRNA
-            ex = False; texop = None
-            if btype in TextureUnit.colour_op:
-                if btype=='MIX' and slot.use_map_alpha and not slot.use_stencil:
-                    if slot.diffuse_color_factor >= 1.0: texop = 'alpha_blend'
-                    else:
-                        texop = TextureUnit.colour_op[ btype ]
-                        ex = True
-                elif btype=='MIX' and slot.use_map_alpha and slot.use_stencil:
-                    texop = 'blend_current_alpha'; ex=True
-                elif btype=='MIX' and not slot.use_map_alpha and slot.use_stencil:
-                    texop = 'blend_texture_alpha'; ex=True
-                else:
-                    texop = TextureUnit.colour_op[ btype ]
-            elif btype in TextureUnit.colour_op_ex:
-                    texop = TextureUnit.colour_op_ex[ btype ]
-                    ex = True
-
-            if texop and ex:
-                if texop == 'blend_manual':
-                    factor = 1.0 - slot.diffuse_color_factor
-                    M += indent(4, 'colour_op_ex %s src_texture src_current %s' %(texop, factor) )
-                else:
-                    M += indent(4, 'colour_op_ex %s src_texture src_current' %texop )
-            elif texop:
-                    M += indent(4, 'colour_op %s' %texop )
 
         else:
             if uv_layer:
@@ -6708,32 +6654,7 @@ class OgreMaterialGenerator( _image_processing_ ):
                         self.image_magick( texture, desturl )   # calls nvconvert if required
 
         return M
-
-class TextureUnit(object):
-    colour_op = {
-        'MIX'       :   'modulate',        # Ogre Default - was "replace" but that kills lighting
-        'ADD'     :   'add',
-        'MULTIPLY' : 'modulate',
-        #'alpha_blend' : '',
-    }
-    colour_op_ex = {
-        'MIX'       :    'blend_manual',
-        'SCREEN': 'modulate_x2',
-        'LIGHTEN': 'modulate_x4',
-        'SUBTRACT': 'subtract',
-        'OVERLAY':    'add_signed',
-        'DIFFERENCE': 'dotproduct',        # best match?
-        'VALUE': 'blend_diffuse_colour',
-    }
-
-    tex_address_mode = {
-        'REPEAT': 'wrap',
-        'EXTEND': 'clamp',
-        'CLIP'       : 'border',
-        'CHECKER' : 'mirror'
-    }
-
-
+        
 @UI
 class PANEL_Object(bpy.types.Panel):
     bl_space_type = 'PROPERTIES'
