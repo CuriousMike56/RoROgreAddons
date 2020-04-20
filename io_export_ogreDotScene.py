@@ -614,11 +614,12 @@ _CONFIG_DEFAULTS_ALL = {
     'INDEPENDENT_ANIM' : False,
     'FORCE_IMAGE_FORMAT' : 'NONE',
     'TOUCH_TEXTURES' : True,
-    'SEP_MATS' : True,
-    'SCENE' : True,
+    'SEP_MATS' : False,
+    'USE_DATA_NAME' : False,
+    'SCENE' : False,
     'SELONLY' : True,
-    'FORCE_CAMERA' : True,
-    'FORCE_LAMPS' : True,
+    'FORCE_CAMERA' : False,
+    'FORCE_LAMPS' : False,
     'MESH' : True,
     'MESH_OVERWRITE' : True,
     'ARM_ANIM' : True,
@@ -3012,6 +3013,7 @@ class _OgreCommonExport_(_TXML_):
     def update_ui(self):
         self.EX_SWAP_AXIS = CONFIG['SWAP_AXIS']
         self.EX_SEP_MATS = CONFIG['SEP_MATS']
+        self.EX_USE_DATA_NAME = CONFIG['USE_DATA_NAME']
         self.EX_ONLY_DEFORMABLE_BONES = CONFIG['ONLY_DEFORMABLE_BONES']
         self.EX_ONLY_ANIMATED_BONES = CONFIG['ONLY_ANIMATED_BONES']
         self.EX_SELONLY = CONFIG['SELONLY']
@@ -3051,6 +3053,10 @@ class _OgreCommonExport_(_TXML_):
         name="Separate Materials",
         description="exports a .material for each material (rather than putting all materials in a single .material file)",
         default=CONFIG['SEP_MATS'])
+    EX_USE_DATA_NAME = BoolProperty(
+        name="Use Data Name Instead",
+        description="Use the object data name instead of outliner object name for mesh export",
+        default=CONFIG['USE_DATA_NAME'])
     EX_ONLY_DEFORMABLE_BONES = BoolProperty(
         name="Only Deformable Bones",
         description="only exports bones that are deformable. Useful for hiding IK-Bones used in Blender. Warning: Will cause trouble if a deformable bone has a non-deformable parent",
@@ -3239,7 +3245,7 @@ class _OgreCommonExport_(_TXML_):
             return ""
 
     def dot_mesh( self, ob, path='/tmp', force_name=None, ignore_shape_animation=False ):
-        dot_mesh( ob, path, force_name, ignore_shape_animation=False )
+        dot_mesh( self, ob, path, force_name, ignore_shape_animation=False )
 
     def ogre_export(self, url, context, force_material_update=[]):
         print ("_"*80)
@@ -3739,6 +3745,10 @@ class INFO_OT_createOgreExport(bpy.types.Operator, _OgreCommonExport_):
         name="Separate Materials",
         description="exports a .material for each material (rather than putting all materials in a single .material file)",
         default=CONFIG['SEP_MATS'])
+    EX_USE_DATA_NAME = BoolProperty(
+        name="Use Data Name Instead",
+        description="Use the object data name instead of outliner object name for mesh export",
+        default=CONFIG['USE_DATA_NAME'])
     EX_ONLY_DEFORMABLE_BONES = BoolProperty(
         name="Only Deformable Bones",
         description="only exports bones that are deformable. Useful for hiding IK-Bones used in Blender. Warning: Will cause trouble if a deformable bone has a non-deformable parent",
@@ -3891,6 +3901,10 @@ class INFO_OT_createRealxtendExport( bpy.types.Operator, _OgreCommonExport_):
         name="Separate Materials",
         description="exports a .material for each material (rather than putting all materials in a single .material file)",
         default=CONFIG['SEP_MATS'])
+    EX_USE_DATA_NAME = BoolProperty(
+        name="Use Data Name Instead",
+        description="Use the object data name instead of outliner object name for mesh export",
+        default=CONFIG['USE_DATA_NAME'])
     EX_ONLY_DEFORMABLE_BONES = BoolProperty(
         name="Only Deformable Bones",
         description="only exports bones that are deformable. Useful for hiding IK-Bones used in Blender. Warning: Will cause trouble if a deformable bone has a non-deformable parent",
@@ -4862,7 +4876,7 @@ class VertexNoPos(object):
 
 ## Creating .mesh
 
-def dot_mesh( ob, path='/tmp', force_name=None, ignore_shape_animation=False, normals=True ):
+def dot_mesh( self, ob,path='/tmp', force_name=None, ignore_shape_animation=False, normals=True ):
     start = time.time()
     
     if not os.path.isdir( path ):
@@ -4888,10 +4902,19 @@ def dot_mesh( ob, path='/tmp', force_name=None, ignore_shape_animation=False, no
         copy = ob
         mesh = ob.data
 
-    name = force_name or ob.data.name
-    name = clean_object_name(name)
-    xmlfile = os.path.join(path, '%s.mesh.xml' % name )
-
+    # ob.data.name = data tab name
+    # ob.name = outliner name
+    
+    if self.EX_USE_DATA_NAME:
+        name = force_name or ob.data.name
+        name = clean_object_name(name)
+        xmlfile = os.path.join(path, '%s.mesh.xml' % name )
+    
+    if not self.EX_USE_DATA_NAME:
+        name = force_name or ob.name
+        name = clean_object_name(name)
+        xmlfile = os.path.join(path, '%s.mesh.xml' % name )
+ 
     print('      - Generating:', '%s.mesh.xml' % name)
     
     if _USE_RPYTHON_ and False:
