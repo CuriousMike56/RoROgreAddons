@@ -15,7 +15,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-VERSION = '0.6.0-RoR'
+VERSION = '0.7.0-RoR'
 
 '''
 CHANGELOG
@@ -3065,10 +3065,6 @@ class _OgreCommonExport_(_TXML_):
         name="Only Animated Bones",
         description="only exports bones that have been keyframed, useful for run-time animation blending (example: upper/lower torso split)",
         default=CONFIG['ONLY_ANIMATED_BONES'])
-    EX_SCENE = BoolProperty(
-        name="Export Scene",
-        description="export current scene (OgreDotScene xml)",
-        default=CONFIG['SCENE'])
     EX_SELONLY = BoolProperty(
         name="Export Selected Only",
         description="export selected",
@@ -3757,10 +3753,6 @@ class INFO_OT_createOgreExport(bpy.types.Operator, _OgreCommonExport_):
         name="Only Animated Bones",
         description="only exports bones that have been keyframed, useful for run-time animation blending (example: upper/lower torso split)",
         default=CONFIG['ONLY_ANIMATED_BONES'])
-    EX_SCENE = BoolProperty(
-        name="Export Scene",
-        description="export current scene (OgreDotScene xml)",
-        default=CONFIG['SCENE'])
     EX_SELONLY = BoolProperty(
         name="Export Selected Only",
         description="export selected",
@@ -3913,10 +3905,6 @@ class INFO_OT_createRealxtendExport( bpy.types.Operator, _OgreCommonExport_):
         name="Only Animated Bones",
         description="only exports bones that have been keyframed, useful for run-time animation blending (example: upper/lower torso split)",
         default=CONFIG['ONLY_ANIMATED_BONES'])
-    EX_SCENE = BoolProperty(
-        name="Export Scene",
-        description="export current scene (OgreDotScene xml)",
-        default=CONFIG['SCENE'])
     EX_SELONLY = BoolProperty(
         name="Export Selected Only",
         description="export selected",
