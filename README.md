@@ -1,10 +1,34 @@
-# OGRE Import/Export plugins for Rigs of Rods using Blender 2.79
+# OGRE Import/Export addon for Rigs of Rods using Blender 2.79
 
-## Original plugin authors:
-- Importer - Dusho
-- Exporter - Brett Hartshorn
+## Original addon authors:
+- Importer - Dusho, goatman, CCCenturion
+- Exporter - Brett Hartshorn, S.Rombauts, F00bar, Waruck, Mind Calamity, Mr.Magne, Jonne Nauha, vax456
 
-## Changes from the original export plugin:
+## Installation 
+
+**The first two steps are for existing addon users!**
+
+- Uninstall old version:
+
+File -> User Prefs -> Addons -> Search "rigs" -> Remove 
+![BlenderRemove](https://i.imgur.com/pUMWEDV.png)
+
+- Delete `blender2ogre.pickle` from `%appdata%\Blender Foundation\Blender\2.79\config\scripts`
+
+(Paste location into Run window [Windows key +R] to get there quickly)
+
+- Download `RoR_ImportExport_0.7.0.zip` from the [Releases page](https://github.com/CuriousMike56/RoROgrePlugins/releases/tag/0.7.0-RoR
+
+- File -> User Prefs -> Addons -> Install from File -> Select `RoR_ImportExport_0.7.0.zip`
+
+- Search "rigs" and enable both addons 
+![AddonEnable](https://i.imgur.com/S6ELqrT.png)
+
+- Save user prefs.
+
+
+
+## Changes from the original export addon:
 
 - Fixed basic (single texture) material export 
 
@@ -22,3 +46,5 @@
 ![DataOutliner](https://i.imgur.com/i0bPvoV.png)
 
 - Removed most features not used by RoR 
+
+
