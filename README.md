@@ -1,4 +1,4 @@
-# OGRE Import/Export addon for Rigs of Rods using Blender 2.79
+# OGRE Import/Export addons for Rigs of Rods using Blender 2.79
 
 ## Original addon authors:
 - Importer - Dusho, goatman, CCCenturion
