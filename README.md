@@ -13,6 +13,8 @@
 File -> User Prefs -> Addons -> Search "rigs" -> Remove 
 ![BlenderRemove](https://i.imgur.com/pUMWEDV.png)
 
+Restart Blender after removing.
+
 - Delete `blender2ogre.pickle` from `%appdata%\Blender Foundation\Blender\2.79\config\scripts`
 
 (Paste location into Run window [Windows key +R] to get there quickly)
