@@ -22,6 +22,7 @@ File -> User Prefs -> Addons -> Search "rigs" -> Remove
 - File -> User Prefs -> Addons -> Install from File -> Select `RoR_ImportExport_0.7.0.zip`
 
 - Search "rigs" and enable both addons 
+
 ![AddonEnable](https://i.imgur.com/S6ELqrT.png)
 
 - Save user prefs.
