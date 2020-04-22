@@ -89,7 +89,7 @@ TODO
 '''
 
 bl_info = {
-    "name": "OGRE Exporter (.scene, .mesh, .skeleton) for Rigs of Rods",
+    "name": "OGRE Exporter (.mesh, .skeleton) for Rigs of Rods",
     "author": "Brett, S.Rombauts, F00bar, Waruck, Mind Calamity, Mr.Magne, Jonne Nauha, vax456, CuriousMike",
     "version": (0, 6, 0),
     "blender": (2, 6, 6),
