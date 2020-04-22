@@ -20,6 +20,11 @@ VERSION = '0.7.0-RoR'
 
 '''
 CHANGELOG
+    0.7.0-RoR
+    * Removed most features not used by RoR 
+    * Fixed basic material export 
+    * Shadows support if "Receive Shadows" is enabled for the material
+    * Added setting to use object data name or outliner name as the exported mesh name (Default: Outliner name) 
     0.6.0
     * patched to work with 2.66.
     0.5.9
