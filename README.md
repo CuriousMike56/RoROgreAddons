@@ -25,7 +25,7 @@ Restart Blender after removing.
 
 - Search "rigs" and enable both addons 
 
-![AddonEnable](https://i.imgur.com/S6ELqrT.png)
+![AddonEnable](https://i.imgur.com/tX0L8Wt.png)
 
 - Save user prefs.
 
