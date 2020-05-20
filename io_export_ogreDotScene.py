@@ -16,10 +16,13 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-VERSION = '0.7.0-RoR'
+VERSION = '0.7.1-RoR'
 
 '''
 CHANGELOG
+    0.7.1-RoR
+    * Fixed exporting with invalid material 
+    * Better warning logging
     0.7.0-RoR
     * Removed most features not used by RoR 
     * Fixed basic material export 
@@ -91,7 +94,7 @@ TODO
 bl_info = {
     "name": "OGRE Exporter (.mesh, .skeleton) for Rigs of Rods",
     "author": "Brett, S.Rombauts, F00bar, Waruck, Mind Calamity, Mr.Magne, Jonne Nauha, vax456, CuriousMike",
-    "version": (0, 6, 0),
+    "version": (0, 7, 1),
     "blender": (2, 6, 6),
     "location": "File > Export...",
     "description": "Export to Ogre xml and binary formats",
