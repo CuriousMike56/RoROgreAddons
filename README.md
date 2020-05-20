@@ -19,9 +19,9 @@ Restart Blender after removing.
 
 (Paste location into Run window [Windows key +R] to get there quickly)
 
-- Download `RoR_ImportExport_0.7.0.zip` from the [Releases page](https://github.com/CuriousMike56/RoROgreAddons/releases)
+- Download `RoR_ImportExport_0.7.1.zip` from the [Releases page](https://github.com/CuriousMike56/RoROgreAddons/releases)
 
-- File -> User Prefs -> Addons -> Install from File -> Select `RoR_ImportExport_0.7.0.zip`
+- File -> User Prefs -> Addons -> Install from File -> Select `RoR_ImportExport_0.7.1.zip`
 
 - Search "rigs" and enable both addons 
 
