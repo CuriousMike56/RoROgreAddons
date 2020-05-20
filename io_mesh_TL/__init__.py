@@ -32,7 +32,7 @@ and 'CCCenturion' for trying to refactor the code to be nicer (to be included)
 """
 
 __author__ = "Dusho"
-__version__ = "0.6.2-RoR"
+__version__ = "0.7.1-RoR"
 
 __bpydoc__ = """\
 This script imports/exports Torchlight Ogre models into/from Blender.

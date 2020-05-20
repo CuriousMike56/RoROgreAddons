@@ -14,7 +14,7 @@ and 'CCCenturion' for trying to refactor the code to be nicer (to be included)
 """
 
 __author__ = "Dusho"
-__version__ = "0.6.2 09-Mar-2013"
+__version__ = "0.7.1"
 
 __bpydoc__ = """\
 This script imports/exports Torchlight Ogre models into/from Blender.
@@ -355,39 +355,53 @@ def xCollectMaterialData(meshData, materialFiles, folder):
                         matDict['imageNameOnly'] = imageName
                 # ambient color
                 if(count>0) and ("ambient" in line):
-                    lineSplit = line.split()
-                    if len(lineSplit)>=4:
-                        r=float(lineSplit[1])
-                        g=float(lineSplit[2])
-                        b=float(lineSplit[3])
-                        matDict['ambient'] = [r,g,b]
+                    try:
+                        lineSplit = line.split()
+                        if len(lineSplit)>=4:
+                            r=float(lineSplit[1])
+                            g=float(lineSplit[2])
+                            b=float(lineSplit[3])
+                            matDict['ambient'] = [r,g,b]
+                    except:
+                        pass
+                        print("WARNING: Ambient color invalid! Skipping")
                 # diffuse color        
                 if(count>0) and ("diffuse" in line):
-                    lineSplit = line.split()
-                    if len(lineSplit)>=4:
-                        r=float(lineSplit[1])
-                        g=float(lineSplit[2])
-                        b=float(lineSplit[3])
-                        matDict['diffuse'] = [r,g,b]
-                        
-                # specular color        
+                    try:
+                        lineSplit = line.split()
+                        if len(lineSplit)>=4:
+                            r=float(lineSplit[1])
+                            g=float(lineSplit[2])
+                            b=float(lineSplit[3])
+                            matDict['diffuse'] = [r,g,b]
+                    except:
+                        pass
+                        print("WARNING: Diffuse color invalid! Skipping")
+                # specular color
                 if(count>0) and ("specular" in line):
-                    lineSplit = line.split()
-                    if len(lineSplit)>=4:
-                        r=float(lineSplit[1])
-                        g=float(lineSplit[2])
-                        b=float(lineSplit[3])
-                        matDict['specular'] = [r,g,b]
-                        
+                    try:
+                        lineSplit = line.split()
+                        if len(lineSplit)>=4:
+                            r=float(lineSplit[1])
+                            g=float(lineSplit[2])
+                            b=float(lineSplit[3])
+                            matDict['specular'] = [r,g,b]
+                    except:
+                        pass
+                        print("WARNING: Specular color invalid! Skipping")
                 # emissive color        
                 if(count>0) and ("emissive" in line):
-                    lineSplit = line.split()
-                    if len(lineSplit)>=4:
-                        r=float(lineSplit[1])
-                        g=float(lineSplit[2])
-                        b=float(lineSplit[3])
-                        matDict['emissive'] = [r,g,b]
-                                        
+                    try:
+                        lineSplit = line.split()
+                        if len(lineSplit)>=4:
+                            r=float(lineSplit[1])
+                            g=float(lineSplit[2])
+                            b=float(lineSplit[3])
+                            matDict['emissive'] = [r,g,b]
+                    except:
+                        pass
+                        print("WARNING: Emissive color invalid! Skipping")
+
                 if "}" in line:
                     count-=1
     
