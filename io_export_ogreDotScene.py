@@ -873,7 +873,7 @@ def get_image_textures( mat ):
             if s and s.texture.type == 'IMAGE':
                 r.append( s )
         except:
-            print('[ERROR]: Missing texture! No texture will be copied.')
+            Report.warnings.append('Material %s has no texture defined! No texture will be copied.' % mat.name)
     return r
 
 def indent( level, *args ):
@@ -5086,8 +5086,12 @@ def dot_mesh( self, ob,path='/tmp', force_name=None, ignore_shape_animation=Fals
         doc.start_tag('submeshes', {})
         for matidx, mat in enumerate( materials ):
             if not len(_sm_faces_[matidx]):
-                Report.warnings.append( 'BAD SUBMESH "%s": material %r, has not been applied to any faces - not exporting as submesh.' % (ob.name, mat.name) )
-                continue # fixes corrupt unused materials
+                try:
+                    Report.warnings.append( 'Object %s has unused material %s not assigned to any faces - please remove' %(ob.name, mat.name))
+                    continue # fixes corrupt unused materials
+                except:
+                    Report.warnings.append( 'Object %s has invalid unnamed material - please check materials tab' %(ob.name))
+                    continue
 
             doc.start_tag('submesh', {
                     'usesharedvertices' : 'true',
